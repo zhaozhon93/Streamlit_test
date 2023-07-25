@@ -1,7 +1,18 @@
 import streamlit as st
 import pandas as pd
+from email_validator import validate_email, EmailNotValidError
 import os
 
+def email_check(email):
+    try:
+      # validate and get info
+        v = validate_email(email)
+        # replace with normalized form
+        email = v["email"]
+        return 'Valid'
+    except EmailNotValidError as e:
+        # email is not valid, exception message is human-readable
+        return str(e)
 
 
 st.title("Hello This is the Demo")
@@ -44,8 +55,42 @@ try:
                  df = df.filter(items=['LGL Constituent ID', 'Constituent Name','Constituent Type','Contact Type','Spouse Name','Communication Tags','Background Info'])
                  df['External_user_id'] = df['LGL Constituent ID']
 
+            if "emails" in i.name.lower():
+                 df_df_email_original = df
+                 df_email = df_email_original
+                 df_email = df_email.groupby(['LGL Constituent ID', 'Email Type']).first().reset_index()
+                #Find duplicate email type
+                 df_email_not_in = df_email_original.merge(df_email, how = 'outer' ,indicator=True).loc[lambda x : x['_merge']=='left_only']
+
+                 df_email_not_in = df_email_not_in.filter(items=['LGL Constituent ID', 'Constituent Name','Email Type','Email'])
+                 df_email_not_in = df_email_not_in.rename(columns={"Email": "Secondary email"})
+                #filter and rename column
+                 df_email = df_email.filter(items=['LGL Constituent ID', 'Constituent Name','Email Type','Email','Is Valid?'])
+                 df_email = df_email.rename(columns={"Is Valid?": "Is_Valid"})
+
+                #Email Validation check
+                 for i in range(len(df_email)):
+                     df_email.iloc[i, 4] = email_check(df_email.iloc[i, 3])
+
+                #Separate email by valied or not
+                 df_invaild_email = df_email.query("Is_Valid != 'Valid'")
+                 df_email = df_email.query("Is_Valid == 'Valid'")
+
+                #Pivot from long format to wide format
+                 df_wide=pd.pivot(df_email, index=['LGL Constituent ID'], columns = 'Email Type',values = 'Email')
+                 cols = df_email['Email Type'].unique()
+                 df_email=df_wide[cols]
+                 df_email = df_email.rename(columns={"Work": "Work_email", "Other": "Secondary_Email","Home":"Email"})
+
+
              st.dataframe(df)
 
 
 except AttributeError:
     st.write("Please Upload A Dataset to Continue")
+        
+
+
+        
+
+
