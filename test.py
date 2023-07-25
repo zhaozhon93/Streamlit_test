@@ -55,7 +55,7 @@ try:
                  df = df.filter(items=['LGL Constituent ID', 'Constituent Name','Constituent Type','Contact Type','Spouse Name','Communication Tags','Background Info'])
                  df['External_user_id'] = df['LGL Constituent ID']
 
-            if "emails" in i.name.lower():
+             if "emails" in i.name.lower():
                  df_df_email_original = df
                  df_email = df_email_original
                  df_email = df_email.groupby(['LGL Constituent ID', 'Email Type']).first().reset_index()
