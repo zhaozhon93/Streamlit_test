@@ -7,7 +7,7 @@ import os
 st.title("Hello This is the Demo")
 st.subheader("lets test it out")
 st.text('looks good')
-a = st.image("1.jpg")
+a = st.image("Bonterra_Logo.jpg")
 data_file = st.file_uploader("please upload an CSV file",type=["csv","xlsx"],accept_multiple_files=True)
 
 try:
