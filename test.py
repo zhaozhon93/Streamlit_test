@@ -1,18 +1,6 @@
 import streamlit as st
 import pandas as pd
-from email_validator import validate_email, EmailNotValidError
 import os
-
-def email_check(email):
-    try:
-      # validate and get info
-        v = validate_email(email)
-        # replace with normalized form
-        email = v["email"]
-        return 'Valid'
-    except EmailNotValidError as e:
-        # email is not valid, exception message is human-readable
-        return str(e)
 
 
 st.title("Hello This is the Demo")
@@ -67,14 +55,6 @@ try:
                 #filter and rename column
                  df_email = df_email.filter(items=['LGL Constituent ID', 'Constituent Name','Email Type','Email','Is Valid?'])
                  df_email = df_email.rename(columns={"Is Valid?": "Is_Valid"})
-
-                #Email Validation check
-                 for i in range(len(df_email)):
-                     df_email.iloc[i, 4] = email_check(df_email.iloc[i, 3])
-
-                #Separate email by valied or not
-                 df_invaild_email = df_email.query("Is_Valid != 'Valid'")
-                 df_email = df_email.query("Is_Valid == 'Valid'")
 
                 #Pivot from long format to wide format
                  df_wide=pd.pivot(df_email, index=['LGL Constituent ID'], columns = 'Email Type',values = 'Email')
