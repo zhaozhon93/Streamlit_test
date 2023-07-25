@@ -60,7 +60,7 @@ try:
                  df_wide=pd.pivot(df_email, index=['LGL Constituent ID'], columns = 'Email Type',values = 'Email')
                  cols = df_email['Email Type'].unique()
                  df_email=df_wide[cols]
-                 df_email = df_email.rename(columns={"Work": "Work_email", "Other": "Secondary_Email","Home":"Email"})
+                 df = df_email.rename(columns={"Work": "Work_email", "Other": "Secondary_Email","Home":"Email"})
 
 
              st.dataframe(df)
